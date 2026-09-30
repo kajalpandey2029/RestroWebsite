@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model MenuItem {
+  id           String      @id @default(uuid())
+  name         String
+  description  String
+  price        Float
+  image        String
+  category     String
+  isVegetarian Boolean
+  isSpicy      Boolean
+  spiceLevel   String?
+  ingredients  String
+  allergens    String?
+  available    Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  orderItems   OrderItem[]
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+}
+
+model Reservation {
+  id             String   @id @default(uuid())
+  name           String
+  email          String
+  phone          String
+  date           String
+  time           String
+  guests         Int
+  occasion       String?
+  specialRequest String?
+  status         String   @default("confirmed")
+  createdAt      DateTime @default(now())
+}
+
+model Order {
+  id            String      @id @default(uuid())
+  customerName  String
+  phone         String
+  email         String?
+  address       String?
+  city          String?
+  zip           String?
+  orderType     String
+  paymentMethod String
+  subtotal      Float
+  tax           Float
+  deliveryFee   Float
+  total         Float
+  status        String      @default("received")
+  instructions  String?
+  createdAt     DateTime    @default(now())
+  items         OrderItem[]
+}
+
+model OrderItem {
+  id         String   @id @default(uuid())
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id])
+  menuItemId String
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  quantity   Int
+  price      Float
+}
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model Subscriber {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
